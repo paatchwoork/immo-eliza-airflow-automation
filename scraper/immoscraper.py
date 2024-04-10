@@ -1,9 +1,10 @@
 import cloudscraper
-from bs4 import BeautifulSoup
 import json
 import asyncio
-from time import perf_counter
 import pandas as pd
+
+from time import perf_counter
+from bs4 import BeautifulSoup
 
 
 class ImmoCrawler:
@@ -285,7 +286,7 @@ class ImmoCrawler:
         except Exception as error:
             print(f"Error in gathering data from {url}: {error}")
 
-    async def get_properties(self, num_pages=333):
+    async def get_properties(self, num_pages=1):
         """
         Asynchronously fetches and extracts property data from multiple pages.
 
