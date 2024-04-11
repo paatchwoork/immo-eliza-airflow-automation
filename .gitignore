@@ -1,1 +1,6 @@
 .venv/
+data
+data_total
+model
+model_prev.tar.gz
+__pycache__ 

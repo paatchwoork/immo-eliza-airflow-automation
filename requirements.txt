@@ -5,3 +5,4 @@ asyncio == 3.4.3
 numpy == 1.26.4
 pandas == 2.2.0
 cloudscraper == 1.2.71
+apache-airflow == 2.8.4
