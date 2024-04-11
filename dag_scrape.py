@@ -8,8 +8,12 @@ from airflow.sensors.filesystem import FileSensor
 
 from importlib.machinery import SourceFileLoader
 
-main = SourceFileLoader("main", "/home/patchwork/Documents/projects_becode/immo_eliza_goats/main.py").load_module()
-cleaner = SourceFileLoader("cleaner", "/home/patchwork/Documents/projects_becode/immo_eliza_goats/clean.py").load_module()
+workdir = "/home/patchwork/Documents/projects_becode/immo_eliza_goats"
+data_dirpath = f"{workdir}/data"
+
+main = SourceFileLoader("main", f"{workdir}/src/main.py").load_module()
+cleaner = SourceFileLoader("cleaner", f"{workdir}/src/clean.py").load_module()
+trainer = SourceFileLoader("trainer", f"{workdir}/src/train.py").load_module()
 
 
 dag_scrape = DAG(
@@ -18,42 +22,38 @@ dag_scrape = DAG(
         schedule = None
         )
 
-data_dirpath = "/home/patchwork/Documents/projects_becode/immo_eliza_goats/data"
 
 
-is_raw_data_here_pre = FileSensor(
-        task_id = "is_raw_data_here_pre",
-        filepath = f"{data_dirpath}/raw/data.csv",
-        dag = dag_scrape
-        )
-
-is_clean_data_here_pre = FileSensor(
-        task_id = "is_clean_data_here_pre",
+is_prev_data_here = FileSensor(
+        task_id = "is_prev_data_here",
         filepath = f"{data_dirpath}/clean/data.csv",
+        poke_interval = 1,
+        timeout = 5,
         dag = dag_scrape
         )
 
+archive_file = f"gzip -k {workdir}/data/clean/data.csv && \
+                mv {workdir}/data/clean/data.csv.gz {workdir}/data/archive/clean_data_prev.csv.gz && \
+                rm {workdir}/data/raw/data.csv"
 
-archive_file = f"gzip {data_dirpath}/clean/data.csv && \
-                mv {data_dirpath}/clean/data.csv.gz {data_dirpath}/archive/clean_data_prev.csv.gz && \
-                rm {data_dirpath}/raw/data.csv"
-
-archive = BashOperator(
-        task_id = "archive",
+archive_prev_data = BashOperator(
+        task_id = "archive_prev_data",
         bash_command = archive_file,
         dag = dag_scrape
         )
 
-#scrape_immo = f"{dirpath}/main.py"
 scrape = PythonOperator(
         task_id = "scrape",
         python_callable = main.async_run_main,
+        op_kwargs = {'workdir': workdir},
         dag = dag_scrape
         )
 
-is_raw_data_here_post = FileSensor(
-        task_id = "is_raw_data_here_post",
-        filepath = f"{data_dirpath}/raw/data.csv",
+is_raw_data_here = FileSensor(
+        task_id = "is_raw_data_here",
+        filepath = f"{workdir}/data/raw/data.csv",
+        poke_interval = 1,
+        timeout = 5,
         dag = dag_scrape
         )
 
@@ -63,11 +63,42 @@ clean = PythonOperator(
         dag = dag_scrape
         )
 
-is_clean_data_here_post = FileSensor(
-        task_id = "is_clean_data_here_post",
-        filepath = f"{data_dirpath}/clean/data.csv",
+is_clean_data_here = FileSensor(
+        task_id = "is_clean_data_here",
+        filepath = f"{workdir}/data/clean/data.csv",
+        poke_interval = 1,
+        timeout = 5,
         dag = dag_scrape
         )
 
+is_prev_model_here = FileSensor(
+        task_id = "is_prev_model_here",
+        filepath = f"{workdir}/model/*.joblib",
+        poke_interval = 1,
+        timeout = 5,
+        dag = dag_scrape
+        )
+archive_model = f"tar -czvf {workdir}/model_prev.tar.gz {workdir}/model/"
 
-is_raw_data_here_pre >> is_clean_data_here_pre >> archive >> scrape >> is_raw_data_here_post >> clean >> is_clean_data_here_post
+archive_prev_model = BashOperator(
+        task_id = "archive_prev_model",
+        bash_command = archive_model,
+        dag = dag_scrape
+        )
+
+train = PythonOperator(
+        task_id = "train",
+        python_callable = trainer.train,
+        op_kwargs = {'workdir': workdir},
+        dag = dag_scrape
+        )
+
+update_api = BashOperator(
+        task_id = "update_api",
+        bash_command = f"cp {workdir}/model/*joblib {workdir}/api/",
+        dag = dag_scrape
+        )
+
+is_prev_data_here >> archive_prev_data >> scrape >> is_raw_data_here >> clean >> is_clean_data_here >> is_prev_model_here >> archive_prev_model >> train >> update_api
+
+
