@@ -286,7 +286,7 @@ class ImmoCrawler:
         except Exception as error:
             print(f"Error in gathering data from {url}: {error}")
 
-    async def get_properties(self, num_pages = 33):
+    async def get_properties(self, num_pages = 333):
         """
         Asynchronously fetches and extracts property data from multiple pages.
 
