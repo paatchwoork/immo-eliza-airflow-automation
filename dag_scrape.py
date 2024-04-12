@@ -86,12 +86,12 @@ dag_scrape = DAG(
 #        dag = dag_scrape
 #        )
 
-train = PythonOperator(
-        task_id = "train",
-        python_callable = trainer.train,
-        op_kwargs = {'workdir': workdir},
-        dag = dag_scrape
-        )
+#train = PythonOperator(
+#        task_id = "train",
+#        python_callable = trainer.train,
+#        op_kwargs = {'workdir': workdir},
+#        dag = dag_scrape
+#        )
 
 update_api = BashOperator(
         task_id = "update_api",
@@ -101,7 +101,7 @@ update_api = BashOperator(
 
 push_folder = BashOperator(
         task_id = "push_folder",
-        bash_command = 'git commit -am "Airflow run ended $(date)" -- {workdir} && git push origin main',
+        bash_command = f'cd {workdir} && git add . && git commit -m "Airflow run ended $(date)" && git push',
         dag = dag_scrape
         )
 
@@ -110,4 +110,5 @@ push_folder = BashOperator(
 #is_raw_data_here >> clean >> is_clean_data_here 
 #is_clean_data_here >> is_prev_model_here >> archive_prev_model 
 #archive_prev_model >> train 
-train >> update_api >> push_folder
+#train >> update_api >> push_folder
+update_api >> push_folder
