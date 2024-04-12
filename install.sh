@@ -1,6 +1,10 @@
 #!/bin/bash
 
 sudo apt-get install pip
+sudo apt-get install python3
+
+python3 -m .venv .
+sourcve activate .venv/bin/activate
 
 pip install -r requirements.txt
 
@@ -15,12 +19,12 @@ from airflow.sensors.filesystem import FileSensor
 
 from importlib.machinery import SourceFileLoader
 
-workdir = "/home/patchwork/Documents/projects_becode/immo_eliza_goats"
-data_dirpath = f"{workdir}/data"
+workdir = $workdir
+data_dirpath = f'{workdir}/data'
 
-main = SourceFileLoader("main", f"{workdir}/src/main.py").load_module()
-cleaner = SourceFileLoader("cleaner", f"{workdir}/src/clean.py").load_module()
-trainer = SourceFileLoader("trainer", f"{workdir}/src/train.py").load_module()
+main = SourceFileLoader('main', f'{workdir}/src/main.py').load_module()
+cleaner = SourceFileLoader('cleaner', f'{workdir}/src/clean.py').load_module()
+trainer = SourceFileLoader('trainer', f'{workdir}/src/train.py').load_module()
 
 
 dag_scrape = DAG(
@@ -110,7 +114,7 @@ push_folder = BashOperator(
         task_id = 'push_folder',
         bash_command = f'cd {workdir} && git add . \
                 && git commit -m 'Airflow run ended \$(date)' \
-                && git push git@github.com:paatchwoork/immo-eliza-airflow-automation.git',
+                && git push git@github.com:paatchwoork/immo-eliza-airflow-automation.git main',
         dag = dag_scrape
         )
 
