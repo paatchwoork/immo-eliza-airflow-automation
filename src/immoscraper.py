@@ -205,7 +205,7 @@ class ImmoCrawler:
                 # Extract relevant property data
                 self.property_data[self.property_key] = {
                     #"link": url,
-                    #"id": data.get("id", None),
+                    "id": data.get("id", None),
                     "locality": multi_get(data, "property", "location", "district"),
                     #"country": multi_get(data, "property", "location", "country"),
                     "construction_year": multi_get(
@@ -242,14 +242,14 @@ class ImmoCrawler:
                         else 0
                     ),
                     "fl_garden": 1 if data["property"]["hasGarden"] else 0,
-                    "fl_floodzone": (
-                        1
-                        if multi_get(
-                            data, "property", "constructionPermit", "floodZoneType"
-                        )
-                        != "NON_FLOOD_ZONE"
-                        else 0
-                    ),
+                    #"fl_floodzone": (
+                    #    1
+                    #    if multi_get(
+                    #        data, "property", "constructionPermit", "floodZoneType"
+                    #    )
+                    #    != "NON_FLOOD_ZONE"
+                    #    else 0
+                    #),
                     "surface_land_sqm": multi_get(data, "property", "land", "surface"),
                     "fl_swimming_pool": (
                         1 if multi_get(data, "property", "hasSwimmingPool") else 0
@@ -257,16 +257,16 @@ class ImmoCrawler:
                     "state_building": multi_get(
                         data, "property", "building", "condition"
                     ),
-                    "epc": multi_get(data, "transaction", "certificates", "epcScore"),
+                    #"epc": multi_get(data, "transaction", "certificates", "epcScore"),
                     "primary_energy_consumption_sqm": multi_get(
                         data,
                         "transaction",
                         "certificates",
                         "primaryEnergyConsumptionPerSqm",
                     ),
-                    "heating_Type": multi_get(
-                        data, "property", "energy", "heatingType"
-                    ),
+                    #"heating_Type": multi_get(
+                    #    data, "property", "energy", "heatingType"
+                    #),
                     "fl_double_glazing": (
                         1
                         if multi_get(data, "property", "energy", "hasDoubleGlazing")
@@ -275,8 +275,8 @@ class ImmoCrawler:
                     #"cadastral_income": multi_get(
                     #    data, "transaction", "sale", "cadastralIncome"
                     #),
-                    "latitude": multi_get(data, "property", "location", "latitude"),
-                    "longitude": multi_get(data, "property", "location", "longitude"),
+                    #"latitude": multi_get(data, "property", "location", "latitude"),
+                    #"longitude": multi_get(data, "property", "location", "longitude"),
                     #"public_sales": multi_get(data, "flag", "isPublicSale"),
                     #"notary_sales": multi_get(data, "flag", "isNotarySale"),
                 }
