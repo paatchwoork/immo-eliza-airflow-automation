@@ -8,7 +8,7 @@ sourcve activate .venv/bin/activate
 
 pip install -r requirements.txt
 
-workdir = $(pwd)
+workdir=$(pwd)
 
 echo "import airflow
 from datetime import datetime
