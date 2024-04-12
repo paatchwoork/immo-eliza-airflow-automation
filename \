@@ -101,7 +101,7 @@ update_api = BashOperator(
 
 push_folder = BashOperator(
         task_id = "push_folder",
-        bash_command = 'git commit -am "Airflow run ended $(date)" -- {workdir} && git push origin main',
+        bash_command = 'git commit -am "Airflow run ended $(date)" && git push origin main',
         dag = dag_scrape
         )
 
