@@ -63,13 +63,16 @@ def train(workdir: str, **kwargs):
     #data = data.round({'latitude': 4, 'longitude': 4})
 
     ## Remove outliers for numerical data
-    #for column in data.select_dtypes(include=["float64"]).columns: # Loop through every numerical column
-    #    z_house = np.abs(zscore(data.loc[data["property_type"] == "HOUSE", column])) # Find zscore for houses
-    #    z_apartment = np.abs(zscore(data.loc[data["property_type"] == "APARTMENT", column])) # Find zscore for apartments
+    #for column in num_features: #data.select_dtypes(include=["float64"]).columns: # Loop through every numerical column
+    #    #z_house = np.abs(zscore(data.loc[data["property_type"] == 0, column])) # Find zscore for houses
+    #    #z_apartment = np.abs(zscore(data.loc[data["property_type"] == 1, column])) # Find zscore for apartments
+
+    #    z = np.abs(zscore(data[column].notna())) # Find zscore for apartments
     #    
     #    # Identify outliers with a z-score greater than 3
     #    threshold = 3
-    #    z = pd.concat([z_house, z_apartment]).sort_index()
+
+    #    #z = pd.concat([z_house, z_apartment]).sort_index()
     #    outliers = data[z > threshold]
 
     #    data = data.drop(outliers.index) # Drop outliers by their index
@@ -125,7 +128,7 @@ def train(workdir: str, **kwargs):
     #imputer_latlong.fit(pd.concat([X_train[localities], X_test[localities]]))
 
 
-    print("Training the model on the train dataset...")
+    #print("Training the model on the train dataset...")
 
     # Train the model
 
